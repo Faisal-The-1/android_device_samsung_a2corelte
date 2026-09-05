@@ -16,11 +16,11 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Maximize build space
         run: |
-          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/share/boost "$AGENT_TOOLSDIRECTORY"
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/share/boost "\$AGENT_TOOLSDIRECTORY"
           sudo docker image prune --all --force
           df -h
 
@@ -37,20 +37,20 @@ jobs:
       - name: Setup Build Environment
         run: |
           sudo apt-get update
-          sudo apt-get install -y bc bison build-essential ccache curl flex g++-multilib gcc-multilib git gnupg gperf imagemagick lib32ncurses5-dev lib32readline-dev lib32z1-dev liblz4-tool libncurses5 libncurses5-dev libsdl1.2-dev libssl-dev libxml2 libxml2-utils lzop pngcrush rsync schedtool squashfs-tools xsltproc zip zlib1g-dev repo
+          sudo apt-get install -y bc bison build-essential ccache curl flex g++-multilib gcc-multilib git gnupg gperf imagemagick lib32ncurses-dev lib32readline-dev lib32z1-dev liblz4-tool libncurses-dev libsdl1.2-dev libssl-dev libxml2 libxml2-utils lzop pngcrush rsync schedtool squashfs-tools xsltproc zip zlib1g-dev repo
 
       - name: Initialize & Sync Repo
         run: |
           mkdir workspace && cd workspace
-          repo init -u https://github.com/LineageOS/android.git -b $BRANCH
+          repo init -u https://github.com/LineageOS/android.git -b \$BRANCH
           mkdir -p .repo/local_manifests
-          cat << 'EOF' > .repo/local_manifests/a2corelte.xml
+          cat << 'XMLEOF' > .repo/local_manifests/a2corelte.xml
           <?xml version="1.0" encoding="UTF-8"?>
           <manifest>
             <project name="Faisal-The-1/android_device_samsung_a2corelte" path="device/samsung/a2corelte" remote="github" revision="main" />
             <project name="Faisal-The-1/android_vendor_samsung_a2corelte" path="vendor/samsung/a2corelte" remote="github" revision="main" />
           </manifest>
-          EOF
+          XMLEOF
           repo sync -c --force-sync --no-clone-bundle --no-tags -j4
 
       - name: Setup Ccache
@@ -64,7 +64,7 @@ jobs:
         run: |
           cd workspace
           source build/envsetup.sh
-          lunch $TARGET
+          lunch \$TARGET
           mka target-files-package otatools -j4
 
       - name: Upload Artifacts
