@@ -42,7 +42,7 @@ jobs:
       - name: Initialize & Sync Repo
         run: |
           mkdir workspace && cd workspace
-          repo init -u https://github.com/LineageOS/android.git -b \$BRANCH
+          repo init -u https://github.com/LineageOS/android.git -b \${{ env.BRANCH }}
           mkdir -p .repo/local_manifests
           cat << 'XMLEOF' > .repo/local_manifests/a2corelte.xml
           <?xml version="1.0" encoding="UTF-8"?>
@@ -64,7 +64,7 @@ jobs:
         run: |
           cd workspace
           source build/envsetup.sh
-          lunch \$TARGET
+          lunch \${{ env.TARGET }}
           mka target-files-package otatools -j4
 
       - name: Upload Artifacts
