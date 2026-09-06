@@ -22,7 +22,7 @@ jobs:
         run: |
           sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/share/boost "\$AGENT_TOOLSDIRECTORY"
           sudo docker image prune --all --force
-          sudo rm -rf /usr/local/lib/android # Frees up 10GB+ of unused Android SDK space!
+          sudo rm -rf /usr/local/lib/android
           df -h
 
       - name: Checkout Repository
@@ -43,17 +43,21 @@ jobs:
       - name: Initialize & Sync Repo (Shallow Clone)
         run: |
           mkdir workspace && cd workspace
-          # --depth=1 prevents downloading 40GB of history, saving space and time!
           repo init -u https://github.com/LineageOS/android.git -b \${{ env.BRANCH }} --depth=1
           mkdir -p .repo/local_manifests
           cat << 'XMLEOF' > .repo/local_manifests/a2corelte.xml
           <?xml version="1.0" encoding="UTF-8"?>
           <manifest>
+            <!-- Exynos 7870 Common Dependencies -->
+            <project name="samsungexynos7870/android_device_samsung_universal7870-common" path="device/samsung/universal7870-common" remote="github" revision="lineage-20.0" />
+            <project name="samsungexynos7870/android_vendor_samsung_universal7870-common" path="vendor/samsung/universal7870-common" remote="github" revision="lineage-20.0" />
+            <project name="samsungexynos7870/android_kernel_samsung_exynos7870" path="kernel/samsung/exynos7870" remote="github" revision="master" />
+            
+            <!-- Your a2corelte Specific Trees -->
             <project name="Faisal-The-1/android_device_samsung_a2corelte" path="device/samsung/a2corelte" remote="github" revision="main" />
             <project name="Faisal-The-1/android_vendor_samsung_a2corelte" path="vendor/samsung/a2corelte" remote="github" revision="main" />
           </manifest>
           XMLEOF
-          # --current-branch ensures we only fetch the lineage-20.0 branch
           repo sync -c --force-sync --no-clone-bundle --no-tags -j4 --current-branch
           df -h
 
